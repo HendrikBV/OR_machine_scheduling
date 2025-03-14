@@ -79,7 +79,7 @@ class IPModel : public Algorithm
 	void clear_cplex();
 
 	bool _output = false;
-	double _max_computation_time = 120; // seconds
+	double _max_computation_time = 300; // seconds
 
 public:
 	void run() override;
@@ -99,7 +99,7 @@ class IPModelAlt : public Algorithm
 	void clear_cplex();
 
 	bool _output = false;
-	double _max_computation_time = 120; // seconds
+	double _max_computation_time = 300; // seconds
 
 public:
 	void run() override;
@@ -1155,7 +1155,8 @@ void IPModel::solve_problem()
 	solution_problem = std::make_unique<double[]>(numvar);
 
 	// Optimize the problem
-	std::cout << "\nSolving an integer programming formulation with an IP model and CPLEX ...";
+	std::cout << "\nUsing an IP model with x_jk = 1 if job j is at position k in the sequence, 0 otherwise"
+		<< "\nUsing CPLEX to solve the model ...";
 	auto start_time = std::chrono::system_clock::now();
 
 
@@ -1594,7 +1595,8 @@ void IPModelAlt::solve_problem()
 	solution_problem = std::make_unique<double[]>(numvar);
 
 	// Optimize the problem
-	std::cout << "\nSolving an integer programming formulation with an IP model and CPLEX ...";
+	std::cout << "\nUsing an IP model with z_ij = 1 if job i is scheduled before job j, 0 otherwise"
+		<< "\nUsing CPLEX to solve the model ...";
 	auto start_time = std::chrono::system_clock::now();
 
 
@@ -1706,18 +1708,24 @@ int main()
 {
 	try
 	{
-		std::string instance = "Example.txt";
+		auto instance = "dataset.txt";
 
-		std::unique_ptr<Algorithm> IP = AlgorithmFactory::create("IPAlt");
+		std::unique_ptr<Algorithm> IP = AlgorithmFactory::create("IP");
+		IP->generate_dataset(25);
 		IP->read_data(instance);
 		IP->run();
 
 		std::cout << "\n\n\n";
 
+		std::unique_ptr<Algorithm> IPAlt = AlgorithmFactory::create("IPAlt");
+		IPAlt->read_data(instance);
+		IPAlt->run();
+
+		std::cout << "\n\n\n";
+
 		std::unique_ptr<Algorithm> BB = AlgorithmFactory::create("BB");
-		//BB->generate_dataset(20);
 		BB->read_data(instance);
-		//BB->run();
+		BB->run();
 
 		//std::unique_ptr<Algorithm> CE = AlgorithmFactory::create("CE");
 		//CE->read_data(instance);
