@@ -276,7 +276,48 @@ void BranchAndBound::run()
 
 	auto start_time = std::chrono::system_clock::now();
 
-	_best_value = std::numeric_limits<int64_t>::max();
+	// heuristic
+	std::cout << "\nUse a due-date based heuristic for an initial upper bound";
+	_best_sequence.reserve(_jobs.size());
+	{
+		int totalduration = 0;
+		int totaltardiness = 0;
+
+		for (auto k = 0; k < _jobs.size(); ++k)
+		{
+			int smallest_due_date = std::numeric_limits<int>::max();
+			int best_job = 0;
+
+			for (auto j = 0; j < _jobs.size(); ++j)
+			{
+				bool alread_assigned = false;
+				for (auto&& l : _best_sequence)
+				{
+					if (l == j)
+					{
+						alread_assigned = true;
+						break;
+					}
+				}
+
+				if (!alread_assigned)
+				{
+					if (_jobs[j].due_date < smallest_due_date)
+					{
+						smallest_due_date = _jobs[j].due_date;
+						best_job = j;
+					}
+				}
+			}
+
+			_best_sequence.push_back(best_job);
+			totalduration += _jobs[best_job].duration;
+			totaltardiness += std::max(totalduration - _jobs[best_job].due_date, 0);
+		}
+
+		_best_value = totaltardiness;
+		std::cout << "\nInitial upper bound: " << totaltardiness;
+	}
 
 	// initial nodes: last position in sequence
 	{
@@ -294,16 +335,11 @@ void BranchAndBound::run()
 		}
 	}
 
+	// explore until all dones done
 	while (true)
 	{
-		// take best node
-		Node node;
-		int64_t best_bound = std::numeric_limits<int64_t>::max();
-		bool node_available = false;
-		int64_t index_node = _nodes.size() - 1;
-		int64_t index_best_node = _nodes.size() - 1;
-
-		while (true)
+		// eliminate nodes with LB >= UB
+		for (int64_t index_node = _nodes.size() - 1; index_node >= 0; --index_node)
 		{
 			if (_nodes[index_node].lowerbound >= _best_value)
 			{
@@ -312,33 +348,35 @@ void BranchAndBound::run()
 
 				++_nb_nodes_pruned;
 			}
-			else if (_nodes[index_node].lowerbound < best_bound)
+		}
+
+		// if no nodes left, stop
+		if (_nodes.empty())
+			break;
+
+		// otherwise take best node
+		Node node;
+		{
+			int64_t best_bound = std::numeric_limits<int64_t>::max();
+			int64_t index_best_node = _nodes.size() - 1;
+
+			for (auto index_node = 0; index_node < _nodes.size(); ++index_node)
 			{
-				index_best_node = index_node;
-				node = _nodes[index_node];
-				best_bound = node.lowerbound;
-				node_available = true;
+				if (_nodes[index_node].lowerbound < best_bound)
+				{
+					index_best_node = index_node;
+					node = _nodes[index_node];
+					best_bound = node.lowerbound;
+				}
 			}
 
-			--index_node;
-
-			if (_nodes.empty())
-				break;
-
-			if (index_node < 0)
-			{
-				std::swap(_nodes[index_best_node], _nodes.back());  // Swap with last element
-				_nodes.pop_back();												   // Remove last element
-				break;
-			}
+			// delete chosen node
+			std::swap(_nodes[index_best_node], _nodes.back());  // Swap with last element
+			_nodes.pop_back();
 		}
 
 
-		if (!node_available)
-			break;
-
-
-		// finish sequence if only job remaining
+		// finish sequence if only one job remaining
 		if (node.sequence.size() == _jobs.size() - 1)
 		{
 			for (size_t j = 0; j < _jobs.size(); ++j)
@@ -436,12 +474,58 @@ void BranchAndBound::run()
 
 void BranchAndBound::run_explanation()
 {
+	std::cout << "\nStarting branch-and-bound ...\n";
+
 	auto start_time = std::chrono::system_clock::now();
 
-	_best_value = std::numeric_limits<int64_t>::max();
+	// heuristic
+	std::cout << "\nUse a due-date based heuristic for an initial upper bound";
+	_best_sequence.reserve(_jobs.size());
+	{
+		int totalduration = 0;
+		int totaltardiness = 0;
+
+		for (auto k = 0; k < _jobs.size(); ++k)
+		{
+			int smallest_due_date = std::numeric_limits<int>::max();
+			int best_job = 0;
+
+			for (auto j = 0; j < _jobs.size(); ++j)
+			{
+				bool alread_assigned = false;
+				for (auto&& l : _best_sequence)
+				{
+					if (l == j)
+					{
+						alread_assigned = true;
+						break;
+					}
+				}
+
+				if (!alread_assigned)
+				{
+					if (_jobs[j].due_date < smallest_due_date)
+					{
+						smallest_due_date = _jobs[j].due_date;
+						best_job = j;
+					}
+				}
+			}
+
+			_best_sequence.push_back(best_job);
+			totalduration += _jobs[best_job].duration;
+			totaltardiness += std::max(totalduration - _jobs[best_job].due_date, 0);
+		}
+
+		_best_value = totaltardiness;
+		std::cout << "\nInitial upper bound: " << totaltardiness;
+		std::cout << "\nSequence: ";
+		for (auto&& job : _best_sequence)
+			std::cout << job + 1 << " ";
+	}
 
 	// initial nodes: last position in sequence
-	std::cout << "\nStarting branch-and-bound ...\n\nCreating initial nodes";
+	std::cout << "\n\nCreating initial nodes";
 	{
 		int64_t total_duration = 0;
 		for (auto&& j : _jobs)
@@ -459,16 +543,11 @@ void BranchAndBound::run_explanation()
 		}
 	}
 
+	// explore until all dones done
 	while (true)
 	{
-		// take best node
-		Node node;
-		int64_t best_bound = std::numeric_limits<int64_t>::max();
-		bool node_available = false;
-		int64_t index_node = _nodes.size() - 1;
-		int64_t index_best_node = _nodes.size() - 1;
-
-		while (true)
+		// eliminate nodes with LB >= UB
+		for (int64_t index_node = _nodes.size() - 1; index_node >= 0; --index_node)
 		{
 			if (_nodes[index_node].lowerbound >= _best_value)
 			{
@@ -483,30 +562,32 @@ void BranchAndBound::run_explanation()
 
 				++_nb_nodes_pruned;
 			}
-			else if (_nodes[index_node].lowerbound < best_bound)
-			{
-				index_best_node = index_node;
-				node = _nodes[index_node];
-				best_bound = node.lowerbound;
-				node_available = true;
-			}
-
-			--index_node;
-
-			if (_nodes.empty())
-				break;
-
-			if (index_node < 0)
-			{
-				std::swap(_nodes[index_best_node], _nodes.back());  // Swap with last element
-				_nodes.pop_back();												   // Remove last element
-				break;
-			}
 		}
 
-
-		if (!node_available)
+		// if no nodes left, stop
+		if (_nodes.empty())
 			break;
+
+		// otherwise take best node
+		Node node;
+		{
+			int64_t best_bound = std::numeric_limits<int64_t>::max();
+			int64_t index_best_node = _nodes.size() - 1;
+
+			for (auto index_node = 0; index_node < _nodes.size(); ++index_node)
+			{
+				if (_nodes[index_node].lowerbound < best_bound)
+				{
+					index_best_node = index_node;
+					node = _nodes[index_node];
+					best_bound = node.lowerbound;
+				}
+			}
+
+			// delete chosen node
+			std::swap(_nodes[index_best_node], _nodes.back());  // Swap with last element
+			_nodes.pop_back();
+		}
 
 
 		std::cout << "\n\nBest remaining node is Node " << node.number << " with partial sequence ";
@@ -515,7 +596,7 @@ void BranchAndBound::run_explanation()
 		std::cout << " and LB = " << node.lowerbound;
 
 
-		// finish sequence if only job remaining
+		// finish sequence if only one job remaining
 		if (node.sequence.size() == _jobs.size() - 1)
 		{
 			for (size_t j = 0; j < _jobs.size(); ++j)
@@ -1160,19 +1241,21 @@ int main()
 {
 	try
 	{
-		std::string instance = "Example.txt";
+		std::string instance = "dataset.txt";
 
 		std::unique_ptr<Algorithm> IP = AlgorithmFactory::create("IP");
 		IP->read_data(instance);
 		IP->run();
 
+		std::cout << "\n\n\n";
+
 		std::unique_ptr<Algorithm> BB = AlgorithmFactory::create("BB");
 		//BB->generate_dataset(20);
 		BB->read_data(instance);
-		//BB->run();
+		BB->run();
 
-		std::unique_ptr<Algorithm> CE = AlgorithmFactory::create("CE");
-		CE->read_data(instance);
+		//std::unique_ptr<Algorithm> CE = AlgorithmFactory::create("CE");
+		//CE->read_data(instance);
 		//CE->run();
 
 
