@@ -1,0 +1,7 @@
+nb_jobs	4
+
+duration	due_date
+6	8
+4	4
+5	12
+8	16
