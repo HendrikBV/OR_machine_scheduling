@@ -143,7 +143,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="algorithms_base.cpp" />
+    <ClCompile Include="algorithms_branch_and_bound.cpp" />
+    <ClCompile Include="algorithms_complete_enumeration.cpp" />
+    <ClCompile Include="algorithms_cplex.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="algorithms.h" />
+    <ClInclude Include="cxxopts.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
