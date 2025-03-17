@@ -153,10 +153,14 @@ namespace MS
 			return std::make_unique<CompleteEnumeration>();
 		else if (algorithm == "bb")
 			return std::make_unique<BranchAndBound>();
-		else if (algorithm == "ip1")
+		else if (algorithm == "cplex1")
 			return std::make_unique<CPLEXIP>();
-		else if (algorithm == "ip2")
+		else if (algorithm == "cplex2")
 			return std::make_unique<CPLEXIPAlt>();
+		else if (algorithm == "ip1")
+			return std::make_unique<ORToolsIP>();
+		else if (algorithm == "ip2")
+			return std::make_unique<ORToolsIPAlt>();
 		else
 			throw std::invalid_argument("No algorithm " + algorithm + " exists");
 	}

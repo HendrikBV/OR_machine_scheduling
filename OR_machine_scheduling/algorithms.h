@@ -1,5 +1,5 @@
 #pragma once
-#ifndef ALGORITHMS_H
+#ifndef ALGORITHMS_MS_H
 
 
 
@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include "ilcplex/cplex.h"
+#include "ortools/linear_solver/linear_solver.h"
 
 
 namespace MS // machine scheduling
@@ -135,6 +136,66 @@ namespace MS // machine scheduling
 
 	///////////////////////////////////////////////////////////////////////////
 
+	// with x_jk = 1 if job j in position k, and C_k = completion time of job k
+	class ORToolsIP : public Algorithm
+	{
+		std::unique_ptr<operations_research::MPSolver> _solver; // OR Tools solver
+
+		/*!
+		 *	@brief Which solver is used?
+		 *
+		 *	solver_id is case insensitive, and the following names are supported:
+		 *  - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP
+		 *  - CBC_MIXED_INTEGER_PROGRAMMING or CBC
+		 *  - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP			(license needed)
+		 *  - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP	    (license needed)
+		 *  - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP		(license needed)
+		 */
+		std::string _solver_type = "SCIP"; 
+
+		void build_problem();
+		void solve_problem();
+		
+		bool _output_screen = false;
+		double _max_computation_time = 600; // seconds
+
+	public:
+		void run(bool verbose) override;
+		void set_max_time(double time) { _max_computation_time = time; }
+	};
+
+	///////////////////////////////////////////////////////////////////////////
+
+	// with z_ij = 1 if job i before job j
+	class ORToolsIPAlt : public Algorithm
+	{
+		std::unique_ptr<operations_research::MPSolver> _solver; // OR Tools solver
+
+		/*!
+		 *	@brief Which solver is used?
+		 *
+		 *	solver_id is case insensitive, and the following names are supported:
+		 *  - SCIP_MIXED_INTEGER_PROGRAMMING or SCIP
+		 *  - CBC_MIXED_INTEGER_PROGRAMMING or CBC
+		 *  - CPLEX_MIXED_INTEGER_PROGRAMMING or CPLEX or CPLEX_MIP			(license needed)
+		 *  - GUROBI_MIXED_INTEGER_PROGRAMMING or GUROBI or GUROBI_MIP	    (license needed)
+		 *  - XPRESS_MIXED_INTEGER_PROGRAMMING or XPRESS or XPRESS_MIP		(license needed)
+		 */
+		std::string _solver_type = "SCIP";
+
+		void build_problem();
+		void solve_problem();
+
+		bool _output_screen = false;
+		double _max_computation_time = 600; // seconds
+
+	public:
+		void run(bool verbose) override;
+		void set_max_time(double time) { _max_computation_time = time; }
+	};
+
+	///////////////////////////////////////////////////////////////////////////
+
 	class AlgorithmFactory
 	{
 	public:
@@ -145,4 +206,4 @@ namespace MS // machine scheduling
 } // namespace MS
 
 
-#endif // !ALGORITHMS_H
+#endif // !ALGORITHMS_MS_H

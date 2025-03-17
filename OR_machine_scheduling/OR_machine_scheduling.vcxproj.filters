@@ -30,6 +30,9 @@
     <ClCompile Include="algorithms_complete_enumeration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="algorithms_ortools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="algorithms.h">

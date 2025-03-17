@@ -78,6 +78,7 @@ namespace MS
 		}
 
 		// explore until all dones done
+		bool bb_found_improvement = false;
 		while (true)
 		{
 			// eliminate nodes with LB >= UB
@@ -161,6 +162,8 @@ namespace MS
 
 				if (node.lowerbound < _best_value)
 				{
+					bb_found_improvement = true;
+
 					_best_value = node.lowerbound;
 					_best_sequence = node.sequence;
 
@@ -233,13 +236,42 @@ namespace MS
 
 		std::chrono::duration<double, std::ratio<1, 1>> elapsed_time = std::chrono::system_clock::now() - start_time;
 
+
+		// sequence was obtained in reverse, so reverse it
+		if(bb_found_improvement) // if heuristic found optimal solution, sequence is already correct
+		{
+			const size_t middle = static_cast<size_t>(_jobs.size() / 2.0 + 0.0001);
+			for (size_t j = 0; j < middle; ++j)
+			{
+				size_t index_front = j;
+				size_t index_back = _best_sequence.size() - 1 - j;
+
+				std::swap(_best_sequence[index_front], _best_sequence[index_back]);
+			}
+		}
+
+		// perform check
+		{
+			int64_t total_time = 0;
+			int64_t total_tardiness = 0;
+			for (auto&& job : _best_sequence)
+			{
+				total_time += _jobs[job].duration;
+				total_tardiness += std::max(total_time - _jobs[job].due_date, 0ll);
+			}
+
+			if (total_tardiness != _best_value)
+				throw std::logic_error("Solution is not correct: total tardiness = " + std::to_string(total_tardiness) 
+					+ " and is not equal to best LB = " + std::to_string(_best_value));
+		}
+
 		_output.set_on(true);
 		_output << "\n\nElapsed time (s): " << elapsed_time.count();
 		_output << "\nNodes evaluated: " << _nb_nodes;
 		_output << "\nNodes pruned: " << _nb_nodes_pruned;
 		_output << "\nBest sequence: ";
-		for (int64_t j = _jobs.size() - 1; j >= 0; --j)
-			_output << _best_sequence[j] + 1 << " "; // reverse the sequence
+		for (auto&& j : _best_sequence)
+			_output << j + 1 << " ";
 		_output << "\nTardiness: " << _best_value;
 	}
 }
