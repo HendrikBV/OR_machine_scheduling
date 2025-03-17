@@ -425,7 +425,7 @@ namespace MS
 
 		// Optimize the problem
 		std::cout << "\nUsing an IP model with x_jk = 1 if job j is at position k in the sequence, 0 otherwise"
-			<< "\nUsing CPLEX to solve the model ...\n";
+			<< "\nUsing CPLEX to solve the model ...\n\n";
 		auto start_time = std::chrono::system_clock::now();
 
 
@@ -856,7 +856,7 @@ namespace MS
 
 		// Optimize the problem
 		std::cout << "\nUsing an IP model with z_ij = 1 if job i is scheduled before job j, 0 otherwise"
-			<< "\nUsing CPLEX to solve the model ...\n";
+			<< "\nUsing CPLEX to solve the model ...\n\n";
 		auto start_time = std::chrono::system_clock::now();
 
 
