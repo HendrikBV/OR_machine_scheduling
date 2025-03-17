@@ -189,7 +189,7 @@ namespace MS
 		//_solver->Write("ORToolsIP.lp"); // NOT YET SUPPORTED
 
 		{
-			std::ofstream mfile("ORTools_IP1.lp");
+			std::ofstream mfile("ORTools_IP.lp");
 			mfile << "Obj\t";
 			for (auto& var : _solver->variables())
 			{
