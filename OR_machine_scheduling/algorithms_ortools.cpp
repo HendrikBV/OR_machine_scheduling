@@ -63,7 +63,7 @@ namespace MS
 
 
 
-		// set objective function: sum(t,d,w) e_tdw
+		// set objective function
 		operations_research::MPObjective* objective = _solver->MutableObjective();
 		objective->SetMinimization();
 		for (auto j = 0; j < _jobs.size(); ++j)
@@ -320,7 +320,7 @@ namespace MS
 
 
 
-		// set objective function: sum(t,d,w) e_tdw
+		// set objective function
 		operations_research::MPObjective* objective = _solver->MutableObjective();
 		objective->SetMinimization();
 		for (auto j = 0; j < _jobs.size(); ++j)
