@@ -16,9 +16,9 @@ int main(int argc, char* argv[])
 			("algorithm", "The choice of algorithm. Possibilities:"
 				"\n\t* \"CE\": complete enumeration"
 				"\n\t* \"BB\": a dedicated branch-and-bound approach"
-				"\n\t* \"CPLEX1\": an integer programming model solved with CPLEX (with variables x[j][k] = 1 if job j in position k in the sequence, 0 otherwise)"
+				"\n\t* \"CPLEX1\": an integer programming model solved with CPLEX (with variables x[j][k] = 1 if job j is at position k in the sequence, 0 otherwise)"
 				"\n\t* \"CPLEX2\": an alternative integer programming model solved with CPLEX (with variables z[i][j] = 1 if job i comes before job j in the sequence, 0 otherwise)"
-				"\n\t* \"IP1\": an integer programming model solved with SCIP (with variables z[i][j] = 1 if job i comes before job j in the sequence, 0 otherwise)"
+				"\n\t* \"IP1\": an integer programming model solved with SCIP (with variables x[j][k] = 1 if job j is at position k in the sequence, 0 otherwise)"
 				"\n\t* \"IP2\": an alternative integer programming model solved with SCIP (with variables z[i][j] = 1 if job i comes before job j in the sequence, 0 otherwise)"
 				, cxxopts::value<std::string>())
 			("data", "Name of the file containing the problem data", cxxopts::value<std::string>())
