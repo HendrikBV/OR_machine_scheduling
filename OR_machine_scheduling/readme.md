@@ -7,14 +7,12 @@ Example on how to run the software:
 
 Parameters:
 * --algorithm arg  The choice of algorithm. Possibilities:
-                        * "CE": complete enumeration
-                        * "BB": a dedicated branch-and-bound approach
-                        * "IP1": an integer programming model solved with
-                       SCIP (with variables x[j][k] = 1 if job j is
-                       at position k in the sequence, 0 otherwise)
-                        * "IP2": an alternative integer programming model
-                       solved with SCIP (with variables z[i][j] = 1 if job
-                       i comes before job j in the sequence, 0 otherwise)
++ "CE": complete enumeration
++ "BB": a dedicated branch-and-bound approach
++ "CPLEX1": an integer programming model solved with CPLEX (with variables x[j][k] = 1 if job j is at position k in the sequence, 0 otherwise) 
++ "CPLEX2": an alternative integer programming model solved with CPLEX (with variables z[i][j] = 1 if job i comes before job j in the sequence, 0 otherwise)
++ "IP1": an integer programming model solved with SCIP (with variables x[j][k] = 1 if job j is at position k in the sequence, 0 otherwise) 
++ "IP2": an alternative integer programming model solved with SCIP (with variables z[i][j] = 1 if job i comes before job j in the sequence, 0 otherwise)
 * --data arg       Name of the file containing the problem data
 * --verbose        Explain the various steps of the algorithm
 * --help           Help on how to use the application
