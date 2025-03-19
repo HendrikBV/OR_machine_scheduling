@@ -6,7 +6,7 @@ Example on how to run the software:
 `OR_machine_scheduling --data="example.txt" --algorithm="BB" --verbose`
 
 Parameters:
-	* --algorithm arg  The choice of algorithm. Possibilities:
+* --algorithm arg  The choice of algorithm. Possibilities:
                         * "CE": complete enumeration
                         * "BB": a dedicated branch-and-bound approach
                         * "IP1": an integer programming model solved with
@@ -15,6 +15,6 @@ Parameters:
                         * "IP2": an alternative integer programming model
                        solved with SCIP (with variables z[i][j] = 1 if job
                        i comes before job j in the sequence, 0 otherwise)
-      * --data arg       Name of the file containing the problem data
-      * --verbose        Explain the various steps of the algorithm
-      * --help           Help on how to use the application
+* --data arg       Name of the file containing the problem data
+* --verbose        Explain the various steps of the algorithm
+* --help           Help on how to use the application
