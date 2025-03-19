@@ -1,6 +1,6 @@
 #pragma once
 #ifndef ALGORITHMS_MS_H
-
+#define ALGORITHMS_MS_H
 
 
 #include <exception>
